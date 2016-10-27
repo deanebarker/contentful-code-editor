@@ -1,5 +1,9 @@
 # Contentful Code Editor
 
+**Note:** This is still _highly_ alpha. Until this notice is removed, understand that this has been tested under very limited, controlled conditions. Use with care, and please send pull requests.
+
+---
+
 A UI extension for Contentful that provides a content-configured Code Mirror instance.  The editor instance is generic by default, but can be configured from a Contentful entry, so the editor settings are stored as content which lets you re-use the UI extension on multiple field with different settings.
 
 >For example: on one field, the editor can be used with HTML syntax highlighting and line-numbering. In another instance (on the same type or on another), it can be used with YAML highlighting, no line-numbering, and completely different styling. These two fields use _the same UI extension_, the settings simply vary from field to field and type to type.

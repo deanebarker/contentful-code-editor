@@ -23,12 +23,12 @@ Settings to configure the editor are stored in an entry, using a type called "Ex
 
 (Field _IDs_ are provided -- these need to be identical, since the extension will search for these IDs. You can _name_ the fields whatever you like.)
 
-* **description (short text):** Just a description of what the settings should apply to. This field is really just for displaying the name in list of content when browsing.
+* **description (short text):** Just a description of what the settings should apply to, for display as the title of the entry in the list of content when browsing. Has no impact other than explanatory.
 * **appliesTo (short text, list):** A list of the "typeName/fieldName" combinations for which these settings should apply. A value in this list is matched to locate settings for a particular type/field combination.
 * **settingData (JSON):** A JSON object of settings for the Code Mirror constructor. This JSON object is passed into the constructor, unaltered. (Some examples provided below.)
 * **scriptUrls (long text)**: A set of URLs (one per line) that should be loaded as Javascript includes (SCRIPT tags)
 * **stylesheetUrls (long text):** A set of URLs (one per line) that should be loaded as stylesheets (LINK tags)
-* **additionalCss (longtext):** Any additional CSS that should be loaded in the HEAD tag of the UI extension document in a single STYLE tag. Use this to style the Code Mirror instance, using the `.CodeMirror` class.
+* **additionalCss (longtext):** Any additional CSS that should be loaded in the HEAD tag of the UI extension document in a single STYLE tag. Use this to style the CodeMirror instance, using the `.CodeMirror` class.
 
 ## Settings Data Examples
 
@@ -56,7 +56,7 @@ More examples of CodeMirror configuration can be found here: https://codemirror.
 
 To load the extension in your space, this JSON can be used:
 
-    var extension = {
+    {
       id: 'code-editor',
       name: 'Code Editor',
       fieldTypes: ["Text"],
@@ -64,3 +64,5 @@ To load the extension in your space, this JSON can be used:
       src: [URL to the HTML file]
       sidebar: false
     };
+
+(Remember, you provide either a `srcdoc` _or_ a `src` property, depending on whether you're providing the entire extension document or just a URL.)

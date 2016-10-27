@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Code Editor</title>
+	<link href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css" rel="stylesheet">
+	<script src="https://contentful.github.io/ui-extensions-sdk/cf-extension-api.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.css" rel="stylesheet" type="text/css"/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.js"></script>
+</head>
+<body>
+	<textarea id="editor"></textarea>
+	<script>
+
+	window.contentfulExtension.init(function (extension) {
+
+		var typeName = extension.contentType.sys.id.toLowerCase();
+		var fieldName = extension.field.id.toLowerCase();
+
+		// Default settings
+		var settings = {
+			mode: { name: 'htmlmixed' }
+		};
+
+		// Do we have a settings object for this type/field combination?
+		extension.space.getEntries({
+			'content_type': 'extensionSettings',
+			'fields.appliesTo': typeName + '/' + fieldName,
+			'locale': 'en-US'
+		}).then(function(results){
+
+			if(results.items.length > 0)
+			{
+				settingsObject = results.items[0];
+
+				console.log(settingsObject);
+				console.log('Custom settings found for: ' + typeName + '/' + fieldName);
+
+				// We have custom settings, overwrite the default settings
+				if(typeof settingsObject.fields.settingData !== "undefined") {
+					settings = settingsObject.fields.settingData['en-US'];
+				}
+
+				// Load any additional script files
+				if(typeof settingsObject.fields.scriptUrls !== "undefined") {
+					scriptUrls = settingsObject.fields.scriptUrls['en-US'].split("\n");
+					for (i = 0; i < scriptUrls.length; i++) {
+						loadScriptUrl(scriptUrls[i]);
+					}
+				}
+
+				// Load any additional stylesheets
+				if(typeof settingsObject.fields.stylesheetUrls !== "undefined") {
+					stylesheetUrls = settingsObject.fields.stylesheetUrls['en-US'].split("\n");
+					for (i = 0; i < stylesheetUrls.length; i++) {
+						loadStylesheetUrl(stylesheetUrls[i]);
+					}
+				}
+
+				// Load any additional CSS
+				if(typeof settingsObject.fields.additionalCss !== "undefined") {
+					loadStyleTag(settingsObject.fields.additionalCss['en-US'].trim());
+				}
+			}
+
+		}).then(function() {
+
+			var editor = CodeMirror.fromTextArea(document.getElementById("editor"), settings);
+			editor.on("blur", function(){
+				extension.field.setValue(editor.getValue())
+			});
+			extension.window.startAutoResizer();
+			editor.setValue(extension.field.getValue());
+
+		});
+	});
+
+	function loadStyleTag(css) {
+		var styleElement = document.createElement("style");
+		styleElement.innerText = css;
+		document.head.appendChild(styleElement);
+		console.log("Loaded " + css.length + " character(s) of additional CSS");
+	}
+
+	function loadStylesheetUrl(url) {
+		var linkElement = document.createElement("link");
+		linkElement.type = "text/css";
+		linkElement.rel = "stylesheet";
+		linkElement.href = url.trim();
+		document.head.appendChild(linkElement);
+		console.log("Loaded stylesheet URL: " + url);
+	}
+
+	function loadScriptUrl(url) {
+		var scriptElement = document.createElement("script");
+		scriptElement.type = "application/javascript";
+		scriptElement.src = url.trim();
+		document.body.appendChild(scriptElement);
+		console.log("Loaded script URL: " + url);
+	}
+
+	</script>
+</body>
+</html>
